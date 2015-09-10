@@ -56,6 +56,6 @@
 
 - name: omd site user sshkey
   authorized_key: user=svccmk
-                  key="{{ lookup('file', '/omd/sites/ifz/.ssh/id_rsa.pub') }}"
+                  key="{{ lookup('file', '/omd/sites/{{omdsite}}/.ssh/id_rsa.pub') }}"
                   state=present
                   key_options='command="sudo -u root /usr/bin/check_mk_agent"'
