@@ -1,0 +1,2 @@
+svccmk ALL=(root) NOPASSWD:SETENV: /usr/bin/check_mk_agent 
+Defaults!/usr/bin/check_mk_agent !requiretty

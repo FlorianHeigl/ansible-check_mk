@@ -1,0 +1,61 @@
+---
+
+- name: create check_mk directories
+  file: path={{ item }} state=directory mode=700
+  with_items:
+    - "{{ cfgdir }}"
+    - "{{ plugins }}"
+    - "{{ plugins }}/60"
+
+
+- name: copy agent
+  copy: src=check_mk_agent
+        dest=/usr/bin/check_mk_agent mode=755 owner=root
+        force=true
+
+
+- name: copy config files
+  copy: src={{ item }} 
+        dest={{ cfgdir }}/{{ item }} mode=600 owner=root
+        force=true
+  with_items:
+    - apache_status.cfg
+    - fileinfo.cfg
+    - logwatch.cfg
+
+
+- name: copy plugins
+  copy: src={{ item }} 
+        dest={{ plugins }}/{{ item }} mode=755 owner=root
+        force=true
+  with_items:
+    - apache_status
+    - lvm
+    - mk_logwatch
+    - nfsexports
+    - smart
+
+- name: copy cached plugins
+  copy: src={{ item }} 
+        dest={{ plugins }}/60/{{ item }} mode=755 owner=root
+        force=true
+  with_items:
+    - mk_apt
+    - mk_inventory
+
+
+- name: cmk service account
+  user: name=svccmk
+        comment="Check_MK Service Account"
+        uid={{ userid }}
+
+- name: sudo rule for cmk
+  copy: src=cmkagent.sudo
+        dest=/etc/sudoers.d/cmkagent mode=0644 owner=root
+
+
+- name: omd site user sshkey
+  authorized_key: user=svccmk
+                  key="{{ lookup('file', '/omd/sites/ifz/.ssh/id_rsa.pub') }}"
+                  state=present
+                  key_options='command="sudo -u root /usr/bin/check_mk_agent"'
