@@ -3,5 +3,4 @@ cfgdir:  /etc/check_mk
 plugins: /usr/lib/check_mk_agent/plugins
 localdir: /usr/lib/check_mk_agent/local
 userid: 6556
-
-
+omdsite: demo
